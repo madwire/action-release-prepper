@@ -28,6 +28,7 @@ export CALVER_ENABLE="${INPUT_CALVER_ENABLE:=FALSE}"
 export CALVER_SCHEME="${INPUT_CALVER_SCHEME:=YYYY.0M.0D.GEN}"
 export CALVER_SPLIT="${INPUT_CALVER_SPLIT:=.}"
 export CALVER_SPLIT_MOD="${INPUT_CALVER_SPLIT_MOD:=$CALVER_SPLIT}"
+export CALVER_PREFIX="${INPUT_CALVER_PREFIX}"
 export TZ="${INPUT_CALVER_TIMEZONE:=UTC-0}"
 
 # Semantic Versioning
@@ -136,10 +137,7 @@ then
 
 	writeLog "INFO" "Determining Calendar Version"
 
-	getCalVer "${CALVER_SCHEME}" "${CALVER_SPLIT}" "${CALVER_SPLIT_MOD}" || { writeLog "ERROR" "Failed to get the current Calendar Version" ; exit 1 ; }
-
-    # Append any prefix and suffix if provided
-    CALVER="${CALVER_PREFIX}${CALVER}${CALVER_SUFFIX}"
+	getCalVer "${CALVER_SCHEME}" "${CALVER_SPLIT}" "${CALVER_SPLIT_MOD}" "${CALVER_PREFIX}" || { writeLog "ERROR" "Failed to get the current Calendar Version" ; exit 1 ; }
 
 	writeLog "INFO" "Calendar Version: ${CALVER} Timezone: ${TZ}"
 	echo "::set-output name=calver::${CALVER}"
