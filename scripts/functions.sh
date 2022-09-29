@@ -268,6 +268,7 @@ function getCalVer() {
 	local SCHEME="${1}"
 	local SPLIT="${2}"
 	local SPLIT_MOD="${3}"
+	local PREFIX="${4}"
 
 	# Defaults
 	local GIT_DIR="${GIT_DIR:=.git/}"
@@ -305,7 +306,7 @@ function getCalVer() {
 	local MOD_MATCH="FALSE"
 
 	# Get the latest tag across ALL branches (excluding Semantic Version tags)
-	TAG="$(git --git-dir="${GIT_DIR}" describe --tags --match "[0-9]*" --abbrev=0 "$(git rev-list --tags --max-count=1)" 2>/dev/null)"
+	TAG="$(git --git-dir="${GIT_DIR}" describe --tags --match "${PREFIX}[0-9]*" --abbrev=0 "$(git rev-list --tags --max-count=1)" 2>/dev/null)"
 
 	writeLog "DEBUG" "Previous Git Tag: ${TAG}"
 
@@ -320,7 +321,14 @@ function getCalVer() {
 	MOD_VER="${ARR_SCHEME_VER[3]}"
 
 	# Do the same for the Git Tag
-	MAJOR_TAG="${ARR_SCHEME_TAG[0]}"
+	# Strip the 'v' from the front of MAJOR
+	if [[ "${ARR_SCHEME_TAG[0]}" =~ ([vV]?)([0-9]+) ]];
+	then
+		PREFIX="${BASH_REMATCH[1]}"
+		MAJOR_TAG="${BASH_REMATCH[2]}"
+	else
+		MAJOR_TAG=""
+	fi
 	MINOR_TAG="${ARR_SCHEME_TAG[1]}"
 	MICRO_TAG="${ARR_SCHEME_TAG[2]}"
 	MOD_TAG="${ARR_SCHEME_TAG[3]}"
@@ -504,6 +512,8 @@ function getCalVer() {
 	# MODIFIER is optional
 	MOD_VER="${MOD_VER:+$SPLIT_MOD$MOD_VER}"
 	CALVER="${CALVER:+$CALVER$MOD_VER}"
+
+	CALVER="${PREFIX}${CALVER}"
 
 	writeLog "DEBUG" "Final CalVer: ${CALVER}"
 	export CALVER

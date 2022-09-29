@@ -77,6 +77,12 @@ inputs:
     required: false
     default: "UTC-0"
 
+  # INPUT_SEMVER_PREFIX
+  calver_prefix:
+    description: "A manual prefix to apply to the CalVer number. For example; 'v'"
+    required: false
+    default: ""
+
   ### SemVer ###
 
   # INPUT_SEMVER_ENABLE
